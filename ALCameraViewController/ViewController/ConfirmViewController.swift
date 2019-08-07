@@ -5,19 +5,52 @@
 //  Created by Alex Littlejohn on 2015/06/30.
 //  Copyright (c) 2015 zero. All rights reserved.
 //
+//
+//  Modified by Kevin Kieffer on 2019/08/06.  Changes as follows:  significantly updated the operation of this
+//  class because as far as I could determine the subviews were not arranging themselves properly when the
+//  device was rotated. Simplified this class by removing the centeringView and scrollView insets, and simply centering the
+//  scrollView in the overall view, setting the scrollView content size = imageView frame size, and centering the cropOverlay
+//  over the scrollView whenever the view finished laying out its subviews.
+//
+//  Furthermore minimum scrollView zoom size was set based on the crop rectangle, but the initial view was set to fully
+//  fit the image on the screen.
+//
+//  A new aspectRatio constraint was created and all constraints were removed from the cropOverlay view in the .xib file.
+//  The centeringView was also removed from the .xib file and the Confirm and Cancel buttons were moved closer to the edge.
+//
+//  A center touch point is set on the CropOverlay if the CropParameters say its movable
+//
+//  Lastly, the image cropping worked differently if the crop rectangle was out of the image bounds, depending on whether
+//  the image came from a PHAsset or a UIImage. In the former, the crop maintained the aspect ratio of the crop rectangle
+//  (possibly distorting the image), but in the latter, it truncated the crop rectangle to the bounds of the image, changing
+//  the aspect ratio.  Since maintaining the aspect ratio is preferred, a change to the UIImage extension was made to rescale the
+//  cropped image back to the aspect ratio, which also possibly distorts the image but preserves the aspect ratio.
+
+
+
 
 import UIKit
 import Photos
 
 public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	
+    var CROP_PADDING : CGFloat {
+        switch UIDevice.current.userInterfaceIdiom {
+        case .pad:
+            return CGFloat(120)
+        default:
+            return CGFloat(30)
+        }
+    }
+    
 	let imageView = UIImageView()
-	@IBOutlet weak var scrollView: UIScrollView!
-	@IBOutlet weak var cropOverlay: CropOverlay!
-	@IBOutlet weak var cancelButton: UIButton!
-	@IBOutlet weak var confirmButton: UIButton!
-	@IBOutlet weak var centeringView: UIView!
-	
+    
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var cropOverlay: CropOverlay!
+    @IBOutlet weak var confirmButton: UIButton!
+    @IBOutlet weak var cancelButton: UIButton!
+    
+    
     var croppingParameters: CroppingParameters {
         didSet {
             cropOverlay.isResizable = croppingParameters.allowResizing
@@ -25,9 +58,6 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         }
     }
 
-	var verticalPadding: CGFloat = 30
-	var horizontalPadding: CGFloat = 30
-	
 	public var onComplete: CameraViewCompletion?
 
 	let asset: PHAsset?
@@ -68,6 +98,7 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 		scrollView.delegate = self
 		scrollView.maximumZoomScale = 1
 		
+        cropOverlay.showsCenterPoint = croppingParameters.allowMoving
         cropOverlay.isHidden = true
         cropOverlay.isResizable = croppingParameters.allowResizing
         cropOverlay.isMovable = croppingParameters.allowMoving
@@ -97,52 +128,34 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 		}
 	}
 	
-	public override func viewWillLayoutSubviews() {
-		super.viewWillLayoutSubviews()
-		let scale = calculateMinimumScale(view.frame.size)
-		let frame = croppingParameters.isEnabled ? cropOverlay.frame : view.bounds
-		
-		scrollView.contentInset = calculateScrollViewInsets(frame)
-		scrollView.minimumZoomScale = scale
-		scrollView.zoomScale = scale
-		centerScrollViewContents()
-	}
+    public override func viewWillLayoutSubviews() {
+        
+        switch UIDevice.current.orientation {
+        case .landscapeLeft, .landscapeRight:
+            cropOverlay.frame.size.height = view.frame.height - CROP_PADDING  //height is constrained in landscale
+            cropOverlay.frame.size.width = cropOverlay.frame.size.height / croppingParameters.aspectRatioHeightToWidth
+        default:
+             cropOverlay.frame.size.width = view.frame.width - CROP_PADDING //width is constrained in portrait
+             cropOverlay.frame.size.height = cropOverlay.frame.size.width * croppingParameters.aspectRatioHeightToWidth
+        }
+        
+    }
 	
-	public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-		super.viewWillTransition(to: size, with: coordinator)
-		
-		let scale = calculateMinimumScale(size)
-		var frame = view.bounds
-		
-		if croppingParameters.isEnabled {
-			frame = cropOverlay.frame
-			let centeringFrame = centeringView.frame
-			var origin: CGPoint
-			
-			if size.width > size.height { // landscape
-				let offset = (size.width - centeringFrame.height)
-				let expectedX = (centeringFrame.height/2 - frame.height/2) + offset
-				origin = CGPoint(x: expectedX, y: frame.origin.x)
-			} else {
-				let expectedY = (centeringFrame.width/2 - frame.width/2)
-				origin = CGPoint(x: frame.origin.y, y: expectedY)
-			}
-			
-			frame.origin = origin
-		} else {
-			frame.size = size
-		}
-		
-		let insets = calculateScrollViewInsets(frame)
-		
-		coordinator.animate(alongsideTransition: { [weak self] context in
-			self?.scrollView.contentInset = insets
-			self?.scrollView.minimumZoomScale = scale
-			self?.scrollView.zoomScale = scale
-			self?.centerScrollViewContents()
-			self?.centerImageViewOnRotate()
-			}, completion: nil)
-	}
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        
+        let (minscale, initscale) = calculateMinimumAndInitialScale()
+        
+        scrollView.contentSize = imageView.frame.size
+        scrollView.minimumZoomScale = minscale
+        scrollView.zoomScale = initscale
+
+        self.centerScrollViewContents()
+        self.centerCropFrame()
+        
+    }
+    
 	
 	private func configureWithImage(_ image: UIImage) {
 		cropOverlay.isHidden = !croppingParameters.isEnabled
@@ -154,21 +167,37 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 		view.setNeedsLayout()
 	}
 	
-	private func calculateMinimumScale(_ size: CGSize) -> CGFloat {
-		var _size = size
-		
+    
+    //Returns a tuple containing the minimum scale and the desired initial scale of the scroll view
+	private func calculateMinimumAndInitialScale() -> (CGFloat, CGFloat) {
+        guard let image = imageView.image else {
+            return (1,1)
+        }
+    
+        //The initial scale will fit the entire image on the screen in either orientation
+        let size = view.bounds
+        let scaleWidth = size.width / image.size.width
+        let scaleHeight = size.height / image.size.height
+    
+        let minSizeWithoutCrop = min(scaleWidth, scaleHeight)
+    
+    
+        //If cropping enabled, the minimum scale fits the image into the crop rectangle, otherwise
+        //its the same as in the initial scale
 		if croppingParameters.isEnabled {
-			_size = cropOverlay.frame.size
+            
+            let cropSize = cropOverlay.frame.size
+            let cropScaleWidth = (cropSize.width - CROP_PADDING) / image.size.width
+            let cropScaleHeight = (cropSize.height - CROP_PADDING) / image.size.height
+            
+            let minSizeWithCrop = min(cropScaleWidth, cropScaleHeight)
+    
+            return (minSizeWithCrop, minSizeWithoutCrop)
 		}
+        else {
+            return (minSizeWithoutCrop, minSizeWithoutCrop)
+        }
 		
-		guard let image = imageView.image else {
-            return 1
-		}
-		
-		let scaleWidth = _size.width / image.size.width
-		let scaleHeight = _size.height / image.size.height
-
-		return min(scaleWidth, scaleHeight)
 	}
 	
 	private func calculateScrollViewInsets(_ frame: CGRect) -> UIEdgeInsets {
@@ -190,8 +219,24 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 		}
 	}
 	
+    private func centerCropFrame() {
+        let size = scrollView.frame.size
+        let cropSize = cropOverlay.frame.size
+        var origin = CGPoint.zero
+        
+        if cropSize.width < size.width {
+            origin.x = (size.width - cropSize.width) / 2
+        }
+        
+        if cropSize.height < size.height {
+            origin.y = (size.height - cropSize.height) / 2
+        }
+        
+        cropOverlay.frame.origin = origin
+    }
+    
 	private func centerScrollViewContents() {
-		let size = croppingParameters.isEnabled ? cropOverlay.frame.size : scrollView.frame.size
+		let size = scrollView.frame.size
 		let imageSize = imageView.frame.size
 		var imageOrigin = CGPoint.zero
 		
@@ -270,6 +315,11 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	public func scrollViewDidZoom(_ scrollView: UIScrollView) {
 		centerScrollViewContents()
 	}
+    
+    
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        view.setNeedsLayout()
+    }
 	
 	func showSpinner() -> UIActivityIndicatorView {
 		let spinner = UIActivityIndicatorView()
@@ -309,17 +359,18 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 		                      y: cropOverlay.frame.origin.y + cropOverlay.outterGap,
 		                      width: cropOverlay.frame.size.width - 2 * cropOverlay.outterGap,
 		                      height: cropOverlay.frame.size.height - 2 * cropOverlay.outterGap)
+        
         cropRect.origin.x += scrollView.contentOffset.x - imageView.frame.origin.x
         cropRect.origin.y += scrollView.contentOffset.y - imageView.frame.origin.y
 
-		let normalizedX = max(0, cropRect.origin.x / imageView.frame.width)
-		let normalizedY = max(0, cropRect.origin.y / imageView.frame.height)
+		let normalizedX = cropRect.origin.x / imageView.frame.width
+		let normalizedY = cropRect.origin.y / imageView.frame.height
 
-        let extraWidth = min(0, cropRect.origin.x)
-        let extraHeight = min(0, cropRect.origin.y)
+        let extraWidth = CGFloat(0) //fabs(cropRect.origin.x)
+        let extraHeight = CGFloat(0) //fabs(cropRect.origin.y)
 
-		let normalizedWidth = min(1, (cropRect.width + extraWidth) / imageView.frame.width)
-		let normalizedHeight = min(1, (cropRect.height + extraHeight) / imageView.frame.height)
+		let normalizedWidth = (cropRect.width + extraWidth) / imageView.frame.width
+		let normalizedHeight = (cropRect.height + extraHeight) / imageView.frame.height
 		
 		return CGRect(x: normalizedX, y: normalizedY, width: normalizedWidth, height: normalizedHeight)
 	}
@@ -343,9 +394,20 @@ extension UIImage {
 		
 		rectTransform = rectTransform.scaledBy(x: scale, y: scale)
 		
-		if let cropped = cgImage?.cropping(to: rect.applying(rectTransform)) {
-			return UIImage(cgImage: cropped, scale: scale, orientation: imageOrientation).fixOrientation()
-		}
+        let cropAspect = rect.height / rect.width
+        
+        if let cropped = cgImage?.cropping(to: rect.applying(rectTransform)) {
+            
+			let cropImage = UIImage(cgImage: cropped, scale: scale, orientation: imageOrientation).fixOrientation()
+            
+            
+            //Rescale the cropped portion to maintain the crop aspect ratio
+            let currentAspect = cropImage.size.height / cropImage.size.width
+                        
+            return cropImage.scaledBy(size: CGSize(width: cropImage.size.width, height: cropImage.size.height * cropAspect / currentAspect)) ?? self
+            
+           
+        }
 		
 		return self
 	}
@@ -362,4 +424,17 @@ extension UIImage {
 		
 		return normalizedImage
 	}
+    
+    func scaledBy(size: CGSize) -> UIImage? {
+        let hasAlpha = false
+        let scale: CGFloat = 0.0 // Automatically use scale factor of main screen
+        
+        UIGraphicsBeginImageContextWithOptions(size, !hasAlpha, scale)
+        self.draw(in: CGRect(origin: CGPoint(x: 0, y: 0), size: size))
+        
+        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return scaledImage
+    }
 }

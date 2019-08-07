@@ -5,19 +5,27 @@
 //  Created by Alex Littlejohn on 2015/06/17.
 //  Copyright (c) 2015 zero. All rights reserved.
 //
+//  Modified by Kevin Kieffer on 2019/08/06.  Changes as follows:
+//  Added an example aspect ratio for the crop rectangle.
+//  Added a tap gesture on the displayed image to bring up the ConfirmViewController to recrop the image
+//  If the camera is not available (ie. on simulator), pop up an error rather than crashing
+
 
 import UIKit
 
 class ViewController: UIViewController {
 
-    var libraryEnabled: Bool = true
+    
+    let ASPECT_RATIO = 1.2
+    
+    var libraryEnabled: Bool = false
     var croppingEnabled: Bool = false
     var allowResizing: Bool = true
     var allowMoving: Bool = false
     var minimumSize: CGSize = CGSize(width: 60, height: 60)
 
     var croppingParameters: CroppingParameters {
-        return CroppingParameters(isEnabled: croppingEnabled, allowResizing: allowResizing, allowMoving: allowMoving, minimumSize: minimumSize)
+        return CroppingParameters(isEnabled: croppingEnabled, allowResizing: allowResizing, allowMoving: allowMoving, minimumSize: minimumSize, aspectRatioHeightToWidth: CGFloat(ASPECT_RATIO))
     }
     
     @IBOutlet weak var imageView: UIImageView!
@@ -28,9 +36,49 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 		
 		self.imageView.contentMode = .scaleAspectFit
+        
+        let imageTap = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(imageTap)
     }
     
+    @objc func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {  //tapped on the member image
+        
+        if let image = imageView.image {
+            
+            let cropViewController = ConfirmViewController(image: image, croppingParameters: croppingParameters)
+            
+            cropViewController.onComplete = { [weak self] image, asset in
+                if let image = image {
+                    self?.imageView.image = image
+                    self?.dismiss(animated: true, completion: nil)
+                } else {
+                    self?.dismiss(animated: true, completion: nil)
+                }
+            }
+            cropViewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+            present(cropViewController, animated: true, completion: nil)
+            
+            
+            
+        }
+    
+    }
+    
+    
     @IBAction func openCamera(_ sender: Any) {
+        
+        if !UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let alert = UIAlertController(title: "No camera available on this device",
+                                            message: nil,
+                                            preferredStyle: .alert)
+            
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+              
+            present(alert, animated: true)
+            return
+        }
+        
         let cameraViewController = CameraViewController(croppingParameters: croppingParameters, allowsLibraryAccess: libraryEnabled) { [weak self] image, asset in
             self?.imageView.image = image
             self?.dismiss(animated: true, completion: nil)

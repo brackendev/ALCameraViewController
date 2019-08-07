@@ -5,14 +5,52 @@
 //  Created by Alex Littlejohn on 2015/06/30.
 //  Copyright (c) 2015 zero. All rights reserved.
 //
+//  Modified by Kevin Kieffer on 2019/08/06.  Changes as follows:
+//  Added a center point circle that shows the touch point for moving the crop overlay. Previously, the user could move the
+//  overlay by dragging anywhere in the bounds, but this prevents pinch-resizing of the image except at the very edge.
+//  Here, the user must touch within the center point to move.  The resize corners still work as before.
 
 import UIKit
 
 internal class CropOverlay: UIView {
 
+    
+    private class CenterCircleView : UIView {
+        
+        override init(frame : CGRect) {
+            super.init(frame: frame)
+            contentMode = .redraw
+            backgroundColor = .clear
+            isOpaque = false
+        }
+        
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
+        override func draw(_ rect: CGRect) {
+            if let context = UIGraphicsGetCurrentContext() {
+                context.addArc(center: CGPoint(x: bounds.midX, y: bounds.midY), radius: bounds.width/2, startAngle: 0, endAngle: 2*CGFloat.pi, clockwise: true)
+                
+                UIColor.blue.setStroke()
+                context.strokePath()
+            }
+        }
+        
+    }
+    
     var outerLines = [UIView]()
     var horizontalLines = [UIView]()
     var verticalLines = [UIView]()
+    
+    private var centerCircle = CenterCircleView()
+
+    private var centerCircleRadius : CGFloat {
+        get {
+            let minSide = min(bounds.width, bounds.height)
+            return min(minSide, 34.0)
+        }
+    }
     
     var topLeftCornerLines = [UIView]()
     var topRightCornerLines = [UIView]()
@@ -36,16 +74,19 @@ internal class CropOverlay: UIView {
 
     var isResizable: Bool = false
     var isMovable: Bool = false
+    var showsCenterPoint = false
     var minimumSize: CGSize = CGSize.zero
 
     internal override init(frame: CGRect) {
         super.init(frame: frame)
         createLines()
-    }
+        addSubview(centerCircle)
+  }
 
     internal required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         createLines()
+        addSubview(centerCircle)
     }
     
     override func layoutSubviews() {
@@ -72,6 +113,12 @@ internal class CropOverlay: UIView {
             }
             
             line.frame = lineFrame
+        }
+        
+        if showsCenterPoint {
+            let r = centerCircleRadius
+            centerCircle.frame = CGRect(x: bounds.midX - r, y: bounds.midY - r, width: r * 2, height: r * 2)
+            centerCircle.setNeedsDisplay()
         }
         
         let corners = [topLeftCornerLines, topRightCornerLines, bottomLeftCornerLines, bottomRightCornerLines]
@@ -200,16 +247,37 @@ internal class CropOverlay: UIView {
 		}
 	}
 
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let view = super.hitTest(point, with: event)
-
-        if !isMovable && isResizable && view != nil {
-            let isButton = cornerButtons.reduce(false) { $1.hitTest(convert(point, to: $1), with: event) != nil || $0 }
-            if !isButton {
-                return nil
+    override func hitTest(_ hitPoint: CGPoint, with event: UIEvent?) -> UIView? {
+        
+        if let view = super.hitTest(hitPoint, with: event) {
+        
+        
+            if isResizable {
+                let isButton = cornerButtons.reduce(false) { $1.hitTest(convert(hitPoint, to: $1), with: event) != nil || $0 }
+                if isButton {  //user hit a resize button, so use our view
+                    return view
+                }
             }
+            
+            if isMovable {
+                let centerPoint = CGPoint(x: bounds.midX, y: bounds.midY)
+                
+                if centerPoint.distance(to: hitPoint) < centerCircleRadius {
+                    return view  //user is in the center of the view, wants to move it, so use our view
+                }
+            }
+            
         }
+        return nil
+        
+    }
+    
 
-        return view
+}
+
+
+extension CGPoint {
+    func distance(to point: CGPoint) -> CGFloat {
+        return sqrt(pow((point.x - x), 2) + pow((point.y - y), 2))
     }
 }

@@ -5,6 +5,11 @@
 //  Created by Alex Littlejohn.
 //  Copyright (c) 2016 zero. All rights reserved.
 //
+//  Modified by Kevin Kieffer on 2019/08/06.  Changes as follows:
+//  Update the overlay constraints when rotating, so the overlay is properly positioned and sized
+//
+//  Updated the button constraint calls and removed the rotate animation method which was not working
+
 
 import UIKit
 import AVFoundation
@@ -14,7 +19,7 @@ public typealias CameraViewCompletion = (UIImage?, PHAsset?) -> Void
 
 public extension CameraViewController {
     /// Provides an image picker wrapped inside a UINavigationController instance
-    public class func imagePickerViewController(croppingParameters: CroppingParameters, completion: @escaping CameraViewCompletion) -> UINavigationController {
+    class func imagePickerViewController(croppingParameters: CroppingParameters, completion: @escaping CameraViewCompletion) -> UINavigationController {
         let imagePicker = PhotoLibraryViewController()
         let navigationController = UINavigationController(rootViewController: imagePicker)
         
@@ -208,6 +213,16 @@ open class CameraViewController: UIViewController {
         view.setNeedsUpdateConstraints()
     }
     
+    private func updateOverlayConstraints() {
+        let portrait = UIApplication.shared.statusBarOrientation.isPortrait
+        let padding : CGFloat = portrait ? 16.0 : -16.0
+        removeCameraOverlayEdgesConstraints()
+        configCameraOverlayEdgeOneContraint(portrait, padding: padding)
+        configCameraOverlayEdgeTwoConstraint(portrait, padding: padding)
+        configCameraOverlayWidthConstraint(portrait)
+        configCameraOverlayCenterConstraint(portrait)
+    }
+    
     /**
      * Setup the constraints when the app is starting or rotating
      * the screen.
@@ -225,7 +240,8 @@ open class CameraViewController: UIViewController {
         
         let statusBarOrientation = UIApplication.shared.statusBarOrientation
         let portrait = statusBarOrientation.isPortrait
-        
+
+        removeCameraButtonConstraints()
         configCameraButtonEdgeConstraint(statusBarOrientation)
         configCameraButtonGravityConstraint(portrait)
         
@@ -239,24 +255,17 @@ open class CameraViewController: UIViewController {
         
         removeSwapButtonConstraints()
         configSwapButtonEdgeConstraint(statusBarOrientation)
-        configSwapButtonGravityConstraint(portrait)
+        configSwapButtonGravityConstraint(statusBarOrientation)
 
         removeLibraryButtonConstraints()
         configLibraryEdgeButtonConstraint(statusBarOrientation)
-        configLibraryGravityButtonConstraint(portrait)
+        configLibraryGravityButtonConstraint(statusBarOrientation)
         
         configFlashEdgeButtonConstraint(statusBarOrientation)
         configFlashGravityButtonConstraint(statusBarOrientation)
         
-        let padding : CGFloat = portrait ? 16.0 : -16.0
-        removeCameraOverlayEdgesConstraints()
-        configCameraOverlayEdgeOneContraint(portrait, padding: padding)
-        configCameraOverlayEdgeTwoConstraint(portrait, padding: padding)
-        configCameraOverlayWidthConstraint(portrait)
-        configCameraOverlayCenterConstraint(portrait)
-        
-        rotate(actualInterfaceOrientation: statusBarOrientation)
-        
+        updateOverlayConstraints()
+         
         super.updateViewConstraints()
     }
     
@@ -394,57 +403,10 @@ open class CameraViewController: UIViewController {
     
     @objc func rotateCameraView() {
         cameraView.rotatePreview()
+        updateViewConstraints()
     }
     
-    /**
-     * This method will rotate the buttons based on
-     * the last and actual orientation of the device.
-     */
-    internal func rotate(actualInterfaceOrientation: UIInterfaceOrientation) {
-        
-        if lastInterfaceOrientation != nil {
-            let lastTransform = CGAffineTransform(rotationAngle: radians(currentRotation(
-                lastInterfaceOrientation!, newOrientation: actualInterfaceOrientation)))
-            setTransform(transform: lastTransform)
-        }
-
-        let transform = CGAffineTransform(rotationAngle: 0)
-        animationRunning = true
-        
-        /**
-         * Dispatch delay to avoid any conflict between the CATransaction of rotation of the screen
-         * and CATransaction of animation of buttons.
-         */
-
-        let duration = animationDuration
-        let spring = animationSpring
-        let options = rotateAnimation
-
-        let time: DispatchTime = DispatchTime.now() + Double(1 * UInt64(NSEC_PER_SEC)/10)
-        DispatchQueue.main.asyncAfter(deadline: time) { [weak self] in
-
-            guard let _ = self else {
-                return
-            }
-            
-            CATransaction.begin()
-            CATransaction.setDisableActions(false)
-            CATransaction.commit()
-            
-            UIView.animate(
-                withDuration: duration,
-                delay: 0.1,
-                usingSpringWithDamping: spring,
-                initialSpringVelocity: 0,
-                options: options,
-                animations: { [weak self] in
-                self?.setTransform(transform: transform)
-                }, completion: { [weak self] _ in
-                    self?.animationRunning = false
-            })
-            
-        }
-    }
+    
     
     func setTransform(transform: CGAffineTransform) {
         closeButton.transform = transform
