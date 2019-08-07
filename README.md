@@ -1,5 +1,7 @@
-# ALCameraViewController
-A camera view controller with custom image picker and image cropping.
+# ALCameraViewController - Forked and Modified
+
+A camera view controller with custom image picker and image cropping. See bottom of the page for 
+a summary of changes for this fork. For detailed changes see notes in source files.
 
 ![camera](https://cloud.githubusercontent.com/assets/932822/8455694/c61de812-2006-11e5-85c0-a57e3d980561.jpg)
 ![cropper](https://cloud.githubusercontent.com/assets/932822/8455697/c627ac44-2006-11e5-82be-7f96e73d9b1f.jpg)
@@ -147,3 +149,37 @@ present(imagePickerViewController, animated: true, completion: nil)
 
 ## License
 ALCameraViewController is available under the MIT license. See the LICENSE file for more info.
+
+
+
+# Changes in this fork
+
+## Cropping
+
+* Image cropping now uses a rectangle with a specified aspect ratio rather than a square.  
+
+* Added a center point circle in the middle of the crop rectangle that shows a touch point for moving the crop overlay. Previously, the user could move the crop overlay by dragging anywhere in the crop bounds, but this prevents pinch-resizing of the image except at the very edge. The resize corners still work as before.
+
+## Camera
+
+* Cleaned up the constraints for the flash, swap, and library buttons to work properly in both landscape orientations
+* Update the overlay constraints when rotating, so the overlay is properly positioned and sized
+* If the camera is not available (ie. on simulator), pop up an error rather than crashing
+
+
+## Library Picker
+
+* Adding a pinch gesture to increase or decrease the number of columns shown, up to a min or max value
+
+
+## Confirm / Cropping View
+
+* Significant updates to the presentation of the image, scrolling, and cropping to fix inconsistencies especially when switching between portrait and landscape.  See source file for full details.
+
+
+## EXAMPLE 
+
+* Added a tap gesture on the displayed image to allow re-cropping the image (illustrates bringing up the crop view directly)
+* The example was updated to show a crop aspect ratio of 1.2 
+
+
