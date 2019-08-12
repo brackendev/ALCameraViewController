@@ -30,7 +30,8 @@ internal class CropOverlay: UIView {
         
         override func draw(_ rect: CGRect) {
             if let context = UIGraphicsGetCurrentContext() {
-                context.addArc(center: CGPoint(x: bounds.midX, y: bounds.midY), radius: bounds.width/2, startAngle: 0, endAngle: 2*CGFloat.pi, clockwise: true)
+                let radius = bounds.width/2 - 1.0  //account for stroke width
+                context.addArc(center: CGPoint(x: bounds.midX, y: bounds.midY), radius: radius, startAngle: 0, endAngle: 2*CGFloat.pi, clockwise: true)
                 
                 UIColor.blue.setStroke()
                 context.strokePath()
