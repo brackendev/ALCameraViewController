@@ -90,14 +90,14 @@ public class PhotoLibraryViewController: UIViewController {
         
         switch gesture.state {
         case .began, .changed:
-            if gesture.scale > CGFloat(1.2) && columns < CameraGlobals.MAX_COLUMNS {
-                gesture.scale = CGFloat(1.0)
-                columns += 1
-                collectionView.collectionViewLayout.invalidateLayout()
-            }
-            else if gesture.scale < CGFloat(0.8) && columns > CameraGlobals.MIN_COLUMNS {
+            if gesture.scale > CGFloat(1.2) && columns > CameraGlobals.MIN_COLUMNS {
                 gesture.scale = CGFloat(1.0)
                 columns -= 1
+                collectionView.collectionViewLayout.invalidateLayout()
+            }
+            else if gesture.scale < CGFloat(0.8) && columns < CameraGlobals.MAX_COLUMNS {
+                gesture.scale = CGFloat(1.0)
+                columns += 1
                 collectionView.collectionViewLayout.invalidateLayout()
             }
         case .ended:
