@@ -257,6 +257,7 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	}
 	
 	internal func cancel() {
+        cropOverlay.removeFromSuperview()  //remove overlay while processing
 		onComplete?(nil, nil)
 	}
 	
@@ -277,7 +278,6 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 				.onSuccess { [weak self] image in
 					self?.onComplete?(image, self?.asset)
 					self?.hideSpinner(spinner)
-					self?.enable()
 				}
 				.onFailure { [weak self] error in
 					self?.hideSpinner(spinner)
@@ -299,13 +299,22 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 				                     y: (image.size.height) * cropRect.origin.y,
 				                     width: (image.size.width * cropRect.width),
 				                     height: (image.size.height * cropRect.height))
-				newImage = image.crop(rect: resizedCropRect)
+                
+                DispatchQueue.global(qos: .userInitiated).async {
+                    newImage = image.crop(rect: resizedCropRect)  //This can take long time and block UI
+                    DispatchQueue.main.async {
+                        self.onComplete?(newImage, nil)
+                        self.hideSpinner(spinner)
+                    }
+                }
+                
 			}
-			
-			onComplete?(newImage, nil)
-			hideSpinner(spinner)
-			enable()
+            else {
+                onComplete?(newImage, nil)
+                hideSpinner(spinner)
+            }
 		}
+        cropOverlay.removeFromSuperview()  //remove overlay while processing
 	}
 	
 	public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -340,10 +349,12 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	
 	func disable() {
 		confirmButton.isEnabled = false
+        cancelButton.isEnabled = false
 	}
 	
 	func enable() {
 		confirmButton.isEnabled = true
+        cancelButton.isEnabled = true
 	}
 	
 	func showNoImageScreen(_ error: NSError) {
@@ -378,6 +389,7 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 }
 
 extension UIImage {
+    
 	func crop(rect: CGRect) -> UIImage {
 
 		var rectTransform: CGAffineTransform
