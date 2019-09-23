@@ -154,6 +154,10 @@ ALCameraViewController is available under the MIT license. See the LICENSE file 
 
 # Changes in this fork
 
+## Compiling
+
+* Updated to Swift 5
+
 ## Cropping
 
 * Image cropping now uses a rectangle with a specified aspect ratio rather than a square.  
@@ -177,7 +181,7 @@ ALCameraViewController is available under the MIT license. See the LICENSE file 
 * Significant updates to the presentation of the image, scrolling, and cropping to fix inconsistencies especially when switching between portrait and landscape.  See source file for full details.
 
 
-## EXAMPLE 
+## Example 
 
 * Added a tap gesture on the displayed image to allow re-cropping the image (illustrates bringing up the crop view directly)
 * The example was updated to show a crop aspect ratio of 1.2 
