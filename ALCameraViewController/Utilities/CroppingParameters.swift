@@ -15,33 +15,38 @@ public struct CroppingParameters {
 
     /// Enable the cropping feature.
     /// Default value is set to false.
-    var isEnabled: Bool
+    let isEnabled: Bool
 
     /// Allow the cropping area to be resized by the user.
     /// Default value is set to true.
-    var allowResizing: Bool
+    let allowResizing: Bool
 
     /// Allow the cropping area to be moved by the user.
     /// Default value is set to false.
-    var allowMoving: Bool
+    let allowMoving: Bool
     
     /// Aspect ratio of the crop
-    var aspectRatioHeightToWidth : CGFloat
+    let aspectRatioHeightToWidth : CGFloat
 
     /// Prevent the user to resize the cropping area below a minimum size.
     /// Default value is (60, 60). Below this value, corner buttons will overlap.
-    var minimumSize: CGSize
+    let minimumSize: CGSize
+    
+    /// The maximum scale factor the user can zoom in, default of 1
+    let maximumZoom : CGFloat
 
     public init(isEnabled: Bool = false,
                 allowResizing: Bool = true,
                 allowMoving: Bool = true,
          minimumSize: CGSize = CGSize(width: 60, height: 60),
-         aspectRatioHeightToWidth: CGFloat = CGFloat(1.0)) {
+         aspectRatioHeightToWidth: CGFloat = 1.0,
+         maximumZoom: CGFloat = 1.0) {
 
         self.isEnabled = isEnabled
         self.allowResizing = allowResizing
         self.allowMoving = allowMoving
         self.minimumSize = minimumSize
         self.aspectRatioHeightToWidth = aspectRatioHeightToWidth
+        self.maximumZoom = maximumZoom
     }
 }

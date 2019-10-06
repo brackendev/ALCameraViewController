@@ -179,7 +179,7 @@ ALCameraViewController is available under the MIT license. See the LICENSE file 
 ## Confirm / Cropping View
 
 * Significant updates to the presentation of the image, scrolling, and cropping to fix inconsistencies especially when switching between portrait and landscape.  See source file for full details.
-
+* Allow zooming in on the image during cropping
 
 ## Example 
 

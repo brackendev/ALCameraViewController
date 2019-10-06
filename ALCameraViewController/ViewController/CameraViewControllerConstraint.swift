@@ -474,7 +474,7 @@ extension CameraViewController {
             relatedBy: .equal,
             toItem: cameraOverlay,
             attribute: portrait ? .width : .height,
-            multiplier: portrait ? croppingParameters.aspectRatioHeightToWidth : 1/croppingParameters.aspectRatioHeightToWidth,
+            multiplier: portrait ? croppingParameters.aspectRatioHeightToWidth : 1.0/croppingParameters.aspectRatioHeightToWidth,
             constant: 0)
         view.addConstraint(cameraOverlayWidthConstraint!)
     }

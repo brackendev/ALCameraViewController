@@ -96,7 +96,7 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 		
 		scrollView.addSubview(imageView)
 		scrollView.delegate = self
-		scrollView.maximumZoomScale = 1
+		scrollView.maximumZoomScale = croppingParameters.maximumZoom
 		
         cropOverlay.showsCenterPoint = croppingParameters.allowMoving
         cropOverlay.isHidden = true
