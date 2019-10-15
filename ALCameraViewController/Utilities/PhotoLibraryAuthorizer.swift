@@ -42,6 +42,9 @@ class PhotoLibraryAuthorizer {
                 self.onDeniedOrRestricted(completion: self.completion)
             }
             break
+        @unknown default:
+             let error = errorWithKey("error.unknown-auth-status", domain: errorDomain)
+             completion(error)
         }
     }
 }
