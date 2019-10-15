@@ -51,10 +51,8 @@ class ViewController: UIViewController {
             cropViewController.onComplete = { [weak self] image, asset in
                 if let image = image {
                     self?.imageView.image = image
-                    self?.dismiss(animated: true, completion: nil)
-                } else {
-                    self?.dismiss(animated: true, completion: nil)
                 }
+                self?.dismiss(animated: true, completion: nil)
             }
             cropViewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
             cropViewController.modalPresentationStyle = .fullScreen
@@ -81,7 +79,9 @@ class ViewController: UIViewController {
         }
         
         let cameraViewController = CameraViewController(croppingParameters: croppingParameters, allowsLibraryAccess: libraryEnabled) { [weak self] image, asset in
-            self?.imageView.image = image
+            if let image = image {
+                self?.imageView.image = image
+            }
             self?.dismiss(animated: true, completion: nil)
         }
         cameraViewController.modalPresentationStyle = .fullScreen
@@ -91,7 +91,9 @@ class ViewController: UIViewController {
     
     @IBAction func openLibrary(_ sender: Any) {
         let libraryViewController = CameraViewController.imagePickerViewController(croppingParameters: croppingParameters) { [weak self] image, asset in
-            self?.imageView.image = image
+            if let image = image {
+                self?.imageView.image = image
+            }
             self?.dismiss(animated: true, completion: nil)
         }
         libraryViewController.modalPresentationStyle = .fullScreen
