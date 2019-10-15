@@ -16,7 +16,8 @@ import UIKit
 class ViewController: UIViewController {
 
     
-    let ASPECT_RATIO = 1.2
+    let ASPECT_RATIO = 1.2  //Crop aspect ratio
+    let MAX_ZOOM = 3.0    //Zoom in on image up to 3x
     
     var libraryEnabled: Bool = false
     var croppingEnabled: Bool = false
@@ -25,7 +26,12 @@ class ViewController: UIViewController {
     var minimumSize: CGSize = CGSize(width: 60, height: 60)
 
     var croppingParameters: CroppingParameters {
-        return CroppingParameters(isEnabled: croppingEnabled, allowResizing: allowResizing, allowMoving: allowMoving, minimumSize: minimumSize, aspectRatioHeightToWidth: CGFloat(ASPECT_RATIO))
+        return CroppingParameters(isEnabled: croppingEnabled,
+                                  allowResizing: allowResizing,
+                                  allowMoving: allowMoving,
+                                  minimumSize: minimumSize,
+                                  aspectRatioHeightToWidth: CGFloat(ASPECT_RATIO),
+                                  maximumZoom: CGFloat(MAX_ZOOM))
     }
     
     @IBOutlet weak var imageView: UIImageView!
