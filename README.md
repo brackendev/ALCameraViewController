@@ -8,7 +8,7 @@ a summary of changes for this fork. For detailed changes see notes in source fil
 
 ## Usage ##
 
-Usage of this fork remains the same as the original but with more options. See the (original README)[https://github.com/AlexLittlejohn/ALCameraViewController/blob/master/README.md] for details.
+Usage of this fork remains the same as the original but with more options. See the [original README](https://github.com/AlexLittlejohn/ALCameraViewController/blob/master/README.md) for details.
 
 ## License
 ALCameraViewController is available under the MIT license. See the LICENSE file for more info.  This fork retains the same license.
