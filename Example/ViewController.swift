@@ -57,6 +57,7 @@ class ViewController: UIViewController {
                 }
             }
             cropViewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+            cropViewController.modalPresentationStyle = .fullScreen
             present(cropViewController, animated: true, completion: nil)
             
             
@@ -83,7 +84,8 @@ class ViewController: UIViewController {
             self?.imageView.image = image
             self?.dismiss(animated: true, completion: nil)
         }
-        
+        cameraViewController.modalPresentationStyle = .fullScreen
+
         present(cameraViewController, animated: true, completion: nil)
     }
     
@@ -92,7 +94,8 @@ class ViewController: UIViewController {
             self?.imageView.image = image
             self?.dismiss(animated: true, completion: nil)
         }
-        
+        libraryViewController.modalPresentationStyle = .fullScreen
+
         present(libraryViewController, animated: true, completion: nil)
     }
     

@@ -38,6 +38,7 @@ public extension CameraViewController {
                     }
                 }
                 confirmController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+                confirmController.modalPresentationStyle = .fullScreen
                 imagePicker?.present(confirmController, animated: true, completion: nil)
             } else {
                 completion(nil, nil)
@@ -559,6 +560,11 @@ open class CameraViewController: UIViewController {
 		let confirmViewController = ConfirmViewController(image: uiImage, croppingParameters: croppingParameters)
 		confirmViewController.onComplete = { [weak self] image, asset in
 			defer {
+                //In iOS13, the volume changed notification channel is being called when dismissing this controller
+                //Since this controller comes back into view momentarily here, before being dismissed, another
+                //photo is being taken and the camera shutter sound occurs. As a workaround, the volume control
+                //is deinitialized here to remove the notification channel.
+                self?.volumeControl = nil
 				self?.dismiss(animated: true, completion: nil)
 			}
 			
@@ -570,6 +576,8 @@ open class CameraViewController: UIViewController {
 			self?.onCompletion = nil
 		}
 		confirmViewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        confirmViewController.modalPresentationStyle = .fullScreen
+
 		present(confirmViewController, animated: true, completion: nil)
 	}
 	
@@ -577,6 +585,7 @@ open class CameraViewController: UIViewController {
         let confirmViewController = ConfirmViewController(asset: asset, croppingParameters: croppingParameters)
         confirmViewController.onComplete = { [weak self] image, asset in
             defer {
+                self?.volumeControl = nil
                 self?.dismiss(animated: true, completion: nil)
             }
 
@@ -588,6 +597,8 @@ open class CameraViewController: UIViewController {
             self?.onCompletion = nil
         }
         confirmViewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        confirmViewController.modalPresentationStyle = .fullScreen
+
         present(confirmViewController, animated: true, completion: nil)
     }
 
