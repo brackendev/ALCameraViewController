@@ -76,6 +76,7 @@ internal class CropOverlay: UIView {
     var isResizable: Bool = false
     var isMovable: Bool = false
     var showsCenterPoint = false
+    var showsButtons = true
     var minimumSize: CGSize = CGSize.zero
 
     internal override init(frame: CGRect) {
@@ -122,42 +123,44 @@ internal class CropOverlay: UIView {
             centerCircle.setNeedsDisplay()
         }
         
-        let corners = [topLeftCornerLines, topRightCornerLines, bottomLeftCornerLines, bottomRightCornerLines]
-        for i in 0..<corners.count {
-            let corner = corners[i]
-			
-			var horizontalFrame: CGRect
-			var verticalFrame: CGRect
-			var buttonFrame: CGRect
-			let buttonSize = CGSize(width: cornerButtonWidth, height: cornerButtonWidth)
-			
-            switch (i) {
-			case 0:	// Top Left
-				verticalFrame = CGRect(x: outterGap, y: outterGap, width: cornerLineDepth, height: cornerLineWidth)
-				horizontalFrame = CGRect(x: outterGap, y: outterGap, width: cornerLineWidth, height: cornerLineDepth)
-				buttonFrame = CGRect(origin: CGPoint(x: 0, y: 0), size: buttonSize)
-			case 1:	// Top Right
-				verticalFrame = CGRect(x: bounds.width - cornerLineDepth - outterGap, y: outterGap, width: cornerLineDepth, height: cornerLineWidth)
-				horizontalFrame = CGRect(x: bounds.width - cornerLineWidth - outterGap, y: outterGap, width: cornerLineWidth, height: cornerLineDepth)
-				buttonFrame = CGRect(origin: CGPoint(x: bounds.width - cornerButtonWidth, y: 0), size: buttonSize)
-			case 2:	// Bottom Left
-				verticalFrame = CGRect(x: outterGap, y:  bounds.height - cornerLineWidth - outterGap, width: cornerLineDepth, height: cornerLineWidth)
-				horizontalFrame = CGRect(x: outterGap, y:  bounds.height - cornerLineDepth - outterGap, width: cornerLineWidth, height: cornerLineDepth)
-				buttonFrame = CGRect(origin: CGPoint(x: 0, y: bounds.height - cornerButtonWidth), size: buttonSize)
-			case 3:	// Bottom Right
-				verticalFrame = CGRect(x: bounds.width - cornerLineDepth - outterGap, y: bounds.height - cornerLineWidth - outterGap, width: cornerLineDepth, height: cornerLineWidth)
-				horizontalFrame = CGRect(x: bounds.width - cornerLineWidth - outterGap, y: bounds.height - cornerLineDepth - outterGap, width: cornerLineWidth, height: cornerLineDepth)
-				buttonFrame = CGRect(origin: CGPoint(x: bounds.width - cornerButtonWidth, y: bounds.height - cornerButtonWidth), size: buttonSize)
+        if showsButtons {
+            let corners = [topLeftCornerLines, topRightCornerLines, bottomLeftCornerLines, bottomRightCornerLines]
+            for i in 0..<corners.count {
+                let corner = corners[i]
+                
+                var horizontalFrame: CGRect
+                var verticalFrame: CGRect
+                var buttonFrame: CGRect
+                let buttonSize = CGSize(width: cornerButtonWidth, height: cornerButtonWidth)
+                
+                switch (i) {
+                case 0:	// Top Left
+                    verticalFrame = CGRect(x: outterGap, y: outterGap, width: cornerLineDepth, height: cornerLineWidth)
+                    horizontalFrame = CGRect(x: outterGap, y: outterGap, width: cornerLineWidth, height: cornerLineDepth)
+                    buttonFrame = CGRect(origin: CGPoint(x: 0, y: 0), size: buttonSize)
+                case 1:	// Top Right
+                    verticalFrame = CGRect(x: bounds.width - cornerLineDepth - outterGap, y: outterGap, width: cornerLineDepth, height: cornerLineWidth)
+                    horizontalFrame = CGRect(x: bounds.width - cornerLineWidth - outterGap, y: outterGap, width: cornerLineWidth, height: cornerLineDepth)
+                    buttonFrame = CGRect(origin: CGPoint(x: bounds.width - cornerButtonWidth, y: 0), size: buttonSize)
+                case 2:	// Bottom Left
+                    verticalFrame = CGRect(x: outterGap, y:  bounds.height - cornerLineWidth - outterGap, width: cornerLineDepth, height: cornerLineWidth)
+                    horizontalFrame = CGRect(x: outterGap, y:  bounds.height - cornerLineDepth - outterGap, width: cornerLineWidth, height: cornerLineDepth)
+                    buttonFrame = CGRect(origin: CGPoint(x: 0, y: bounds.height - cornerButtonWidth), size: buttonSize)
+                case 3:	// Bottom Right
+                    verticalFrame = CGRect(x: bounds.width - cornerLineDepth - outterGap, y: bounds.height - cornerLineWidth - outterGap, width: cornerLineDepth, height: cornerLineWidth)
+                    horizontalFrame = CGRect(x: bounds.width - cornerLineWidth - outterGap, y: bounds.height - cornerLineDepth - outterGap, width: cornerLineWidth, height: cornerLineDepth)
+                    buttonFrame = CGRect(origin: CGPoint(x: bounds.width - cornerButtonWidth, y: bounds.height - cornerButtonWidth), size: buttonSize)
 
-            default:
-                verticalFrame = CGRect.zero
-                horizontalFrame = CGRect.zero
-				buttonFrame = CGRect.zero
+                default:
+                    verticalFrame = CGRect.zero
+                    horizontalFrame = CGRect.zero
+                    buttonFrame = CGRect.zero
+                }
+                
+                corner[0].frame = verticalFrame
+                corner[1].frame = horizontalFrame
+                cornerButtons[i].frame = buttonFrame
             }
-			
-            corner[0].frame = verticalFrame
-            corner[1].frame = horizontalFrame
-			cornerButtons[i].frame = buttonFrame
         }
 		
 		let lineThickness = lineWidth / UIScreen.main.scale
@@ -213,7 +216,7 @@ internal class CropOverlay: UIView {
 	}
 	
 	@objc func moveCropOverlay(gestureRecognizer: UIPanGestureRecognizer) {
-		if isResizable, let button = gestureRecognizer.view as? UIButton {
+		if isResizable, showsButtons, let button = gestureRecognizer.view as? UIButton {
 			if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
 				let translation = gestureRecognizer.translation(in: self)
 				
@@ -253,7 +256,7 @@ internal class CropOverlay: UIView {
         if let view = super.hitTest(hitPoint, with: event) {
         
         
-            if isResizable {
+            if isResizable && showsButtons {
                 let isButton = cornerButtons.reduce(false) { $1.hitTest(convert(hitPoint, to: $1), with: event) != nil || $0 }
                 if isButton {  //user hit a resize button, so use our view
                     return view

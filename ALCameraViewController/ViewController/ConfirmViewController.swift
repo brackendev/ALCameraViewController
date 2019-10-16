@@ -53,8 +53,11 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
     
     var croppingParameters: CroppingParameters {
         didSet {
+            cropOverlay.showsCenterPoint = croppingParameters.allowMoving
             cropOverlay.isResizable = croppingParameters.allowResizing
+            cropOverlay.isMovable = croppingParameters.allowMoving
             cropOverlay.minimumSize = croppingParameters.minimumSize
+            cropOverlay.showsButtons = croppingParameters.allowResizing
         }
     }
 
@@ -110,6 +113,7 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         cropOverlay.isResizable = croppingParameters.allowResizing
         cropOverlay.isMovable = croppingParameters.allowMoving
         cropOverlay.minimumSize = croppingParameters.minimumSize
+        cropOverlay.showsButtons = croppingParameters.allowResizing
 
 		let spinner = showSpinner()
 		

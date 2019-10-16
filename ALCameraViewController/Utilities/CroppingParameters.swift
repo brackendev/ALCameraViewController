@@ -16,6 +16,10 @@ public struct CroppingParameters {
     /// Enable the cropping feature.
     /// Default value is set to false.
     let isEnabled: Bool
+    
+    /// Enable the overlay on the camera feature
+    /// Default is set to true
+    let cameraOverlay : Bool
 
     /// Allow the cropping area to be resized by the user.
     /// Default value is set to true.
@@ -40,7 +44,8 @@ public struct CroppingParameters {
                 allowMoving: Bool = true,
          minimumSize: CGSize = CGSize(width: 60, height: 60),
          aspectRatioHeightToWidth: CGFloat = 1.0,
-         maximumZoom: CGFloat = 1.0) {
+         maximumZoom: CGFloat = 1.0,
+         cameraOverlay : Bool = true) {
 
         self.isEnabled = isEnabled
         self.allowResizing = allowResizing
@@ -48,5 +53,6 @@ public struct CroppingParameters {
         self.minimumSize = minimumSize
         self.aspectRatioHeightToWidth = aspectRatioHeightToWidth
         self.maximumZoom = maximumZoom
+        self.cameraOverlay = cameraOverlay
     }
 }

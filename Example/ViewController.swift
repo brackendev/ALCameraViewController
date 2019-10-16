@@ -31,7 +31,8 @@ class ViewController: UIViewController {
                                   allowMoving: allowMoving,
                                   minimumSize: minimumSize,
                                   aspectRatioHeightToWidth: CGFloat(ASPECT_RATIO),
-                                  maximumZoom: CGFloat(MAX_ZOOM))
+                                  maximumZoom: CGFloat(MAX_ZOOM),
+                                  cameraOverlay: false)
     }
     
     @IBOutlet weak var imageView: UIImageView!

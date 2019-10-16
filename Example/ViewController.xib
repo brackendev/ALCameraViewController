@@ -94,7 +94,6 @@
                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="k5h-ry-m8S">
                             <rect key="frame" x="15.5" y="28" width="51" height="31"/>
                             <connections>
-                                <action selector="libraryChanged:" destination="-1" eventType="valueChanged" id="LKB-0U-NRn"/>
                                 <action selector="resizingChanged:" destination="-1" eventType="valueChanged" id="veN-be-OGb"/>
                             </connections>
                         </switch>
@@ -122,9 +121,7 @@
                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DSI-Wk-w93">
                             <rect key="frame" x="96.5" y="28" width="51" height="31"/>
                             <connections>
-                                <action selector="libraryChanged:" destination="-1" eventType="valueChanged" id="wgu-jE-pwk"/>
                                 <action selector="movingChanged:" destination="-1" eventType="valueChanged" id="VNQ-EU-Pcc"/>
-                                <action selector="resizingChanged:" destination="-1" eventType="valueChanged" id="dWI-k0-WsG"/>
                             </connections>
                         </switch>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="isMovable" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YNR-ru-Naw">
