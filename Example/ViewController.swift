@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     var libraryEnabled: Bool = false
     var croppingEnabled: Bool = false
     var allowResizing: Bool = true
-    var allowMoving: Bool = false
+    var allowMoving: Bool = true
     var minimumSize: CGSize = CGSize(width: 60, height: 60)
 
     var croppingParameters: CroppingParameters {
