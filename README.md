@@ -31,7 +31,7 @@ ALCameraViewController is available under the MIT license. See the LICENSE file 
 * Cleaned up the constraints for the flash, swap, and library buttons to work properly in both landscape orientations
 * Update the overlay constraints when rotating, so the overlay is properly positioned and sized
 * If the camera is not available (ie. on simulator), pop up an error rather than crashing
-
+* Hide flash button if the flash is not available (for instance, iPads)
 
 ## Library Picker
 

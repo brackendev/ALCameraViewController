@@ -285,6 +285,13 @@ open class CameraViewController: UIViewController {
         checkPermissions()
         cameraView.configureFocus()
         cameraView.configureZoom()
+        
+        if let device = AVCaptureDevice.default(for: .video) {
+            if !device.hasFlash {
+                flashButton.isEnabled = false
+                flashButton.isHidden = true
+            }
+        }
     }
 
     /**
