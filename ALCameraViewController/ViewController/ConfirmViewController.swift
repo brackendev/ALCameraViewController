@@ -63,6 +63,9 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	let asset: PHAsset?
 	let image: UIImage?
 	
+    var didInitialAdjustCropOverlay = false
+    var didInitialCenterCropOverlay = false
+
 	public init(image: UIImage, croppingParameters: CroppingParameters) {
 		self.croppingParameters = croppingParameters
 		self.asset = nil
@@ -81,6 +84,10 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         fatalError("init(coder:) has not been implemented")
 	}
 	
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
 	public override var prefersStatusBarHidden: Bool {
 		return true
 	}
@@ -126,17 +133,20 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 			hideSpinner(spinner)
 			enable()
 		}
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(orientationChanged), name:  Notification.Name("UIDeviceOrientationDidChangeNotification"), object: nil)
+
 	}
+    
+    @objc func orientationChanged() {
+        centerCropFrame()
+    }
 	
     public override func viewWillLayoutSubviews() {
         
-        switch UIDevice.current.orientation {
-        case .landscapeLeft, .landscapeRight:
-            cropOverlay.frame.size.height = view.frame.height - CROP_PADDING  //height is constrained in landscale
-            cropOverlay.frame.size.width = cropOverlay.frame.size.height / croppingParameters.aspectRatioHeightToWidth
-        default:
-             cropOverlay.frame.size.width = view.frame.width - CROP_PADDING //width is constrained in portrait
-             cropOverlay.frame.size.height = cropOverlay.frame.size.width * croppingParameters.aspectRatioHeightToWidth
+        if !didInitialAdjustCropOverlay || !cropOverlay.isResizable {
+            adjustCropOverlay()  //keep it centered and constrainted on orientation changes
+            didInitialAdjustCropOverlay = true
         }
         
     }
@@ -152,10 +162,24 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         scrollView.zoomScale = initscale
 
         self.centerScrollViewContents()
-        self.centerCropFrame()
+        
+        if !cropOverlay.isResizable || !didInitialCenterCropOverlay {
+            self.centerCropFrame()
+            didInitialCenterCropOverlay = true
+        }
         
     }
     
+    private func adjustCropOverlay() {
+        switch UIDevice.current.orientation {
+        case .landscapeLeft, .landscapeRight:
+            cropOverlay.frame.size.height = view.frame.height - CROP_PADDING  //height is constrained in landscale
+            cropOverlay.frame.size.width = cropOverlay.frame.size.height / croppingParameters.aspectRatioHeightToWidth
+        default:
+             cropOverlay.frame.size.width = view.frame.width - CROP_PADDING //width is constrained in portrait
+             cropOverlay.frame.size.height = cropOverlay.frame.size.width * croppingParameters.aspectRatioHeightToWidth
+        }
+    }
 	
 	private func configureWithImage(_ image: UIImage) {
 		cropOverlay.isHidden = !croppingParameters.isEnabled
