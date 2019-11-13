@@ -28,7 +28,12 @@ public class CameraView: UIView {
         session.sessionPreset = AVCaptureSession.Preset.photo
 
         device = cameraWithPosition(position: currentPosition)
-        if let device = device , device.hasFlash {
+        if device == nil {
+            print("Error: No Camera device found")
+            return
+        }
+        
+        if device.hasFlash {
             do {
                 try device.lockForConfiguration()
                 device.flashMode = .auto
