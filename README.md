@@ -10,6 +10,12 @@ a summary of changes for this fork. For detailed changes see notes in source fil
 
 Usage of this fork remains the same as the original but with more options. See the [original README](https://github.com/AlexLittlejohn/ALCameraViewController/blob/master/README.md) for details.
 
+## CocoaPod ##
+
+Incorporate this fork into your project with CocoaPods. Add this line to your podfile:
+
+`pod 'KK-ALCameraViewController'`
+
 ## License
 ALCameraViewController is available under the MIT license. See the LICENSE file for more info.  This fork retains the same license.
 
