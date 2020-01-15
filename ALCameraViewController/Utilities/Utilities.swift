@@ -54,12 +54,7 @@ internal func currentRotation(_ oldOrientation: UIInterfaceOrientation, newOrien
     }
 }
 
-internal func largestPhotoSize() -> CGSize {
-    let scale = UIScreen.main.scale
-    let screenSize = UIScreen.main.bounds.size
-    let size = CGSize(width: screenSize.width * scale, height: screenSize.height * scale)
-    return size
-}
+
 
 internal func errorWithKey(_ key: String, domain: String) -> NSError {
     let errorString = localizedString(key)

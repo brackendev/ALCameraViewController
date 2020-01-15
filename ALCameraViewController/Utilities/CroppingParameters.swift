@@ -29,6 +29,11 @@ public struct CroppingParameters {
     /// Default value is set to false.
     let allowMoving: Bool
     
+    
+    /// Allow rotating 90 degrees in the confirm view
+    /// Default value is set to true
+    let allowRotate: Bool
+    
     /// Aspect ratio of the crop
     let aspectRatioHeightToWidth : CGFloat
 
@@ -42,6 +47,7 @@ public struct CroppingParameters {
     public init(isEnabled: Bool = false,
                 allowResizing: Bool = true,
                 allowMoving: Bool = true,
+                allowRotate: Bool = true,
          minimumSize: CGSize = CGSize(width: 60, height: 60),
          aspectRatioHeightToWidth: CGFloat = 1.0,
          maximumZoom: CGFloat = 1.0,
@@ -50,6 +56,7 @@ public struct CroppingParameters {
         self.isEnabled = isEnabled
         self.allowResizing = allowResizing
         self.allowMoving = allowMoving
+        self.allowRotate = allowRotate
         self.minimumSize = minimumSize
         self.aspectRatioHeightToWidth = aspectRatioHeightToWidth
         self.maximumZoom = maximumZoom

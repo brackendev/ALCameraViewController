@@ -29,6 +29,7 @@ class ViewController: UIViewController {
         return CroppingParameters(isEnabled: croppingEnabled,
                                   allowResizing: allowResizing,
                                   allowMoving: allowMoving,
+                                  allowRotate: true,
                                   minimumSize: minimumSize,
                                   aspectRatioHeightToWidth: CGFloat(ASPECT_RATIO),
                                   maximumZoom: CGFloat(MAX_ZOOM),

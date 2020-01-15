@@ -49,6 +49,8 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var cropOverlay: CropOverlay!
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var rotateButton: UIButton!
+    
     
     
     var croppingParameters: CroppingParameters {
@@ -115,14 +117,17 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         cropOverlay.minimumSize = croppingParameters.minimumSize
         cropOverlay.showsButtons = croppingParameters.allowResizing
 
+        if !croppingParameters.allowRotate {
+            rotateButton.isHidden = true
+        }
+        
 		let spinner = showSpinner()
 		
 		disable()
 		
-		if let asset = asset {
+		if let asset = asset {  //load full resolution image size
 			_ = SingleImageFetcher()
 				.setAsset(asset)
-				.setTargetSize(largestPhotoSize())
 				.onSuccess { [weak self] image in
 					self?.configureWithImage(image)
 					self?.hideSpinner(spinner)
@@ -282,7 +287,15 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	private func buttonActions() {
 		confirmButton.action = { [weak self] in self?.confirmPhoto() }
 		cancelButton.action = { [weak self] in self?.cancel() }
+        rotateButton.action = { [weak self] in self?.rotateRight() }
 	}
+    
+    internal func rotateRight() {
+        if let rotatedImage = imageView.image?.rotate() {
+            configureWithImage(rotatedImage)
+            centerScrollViewContents()
+        }
+    }
 	
 	internal func cancel() {
         cropOverlay.removeFromSuperview()  //remove overlay while processing
@@ -300,48 +313,28 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 		imageView.isHidden = true
 		
 		let spinner = showSpinner()
-		
-		if let asset = asset {
-			var fetcher = SingleImageFetcher()
-				.onSuccess { [weak self] image in
-					self?.onComplete?(image, self?.asset)
-					self?.hideSpinner(spinner)
-				}
-				.onFailure { [weak self] error in
-					self?.hideSpinner(spinner)
-					self?.showNoImageScreen(error)
-				}
-				.setAsset(asset)
-			if croppingParameters.isEnabled {
-				let rect = normalizedRect(makeProportionalCropRect(), orientation: image.imageOrientation)
-				fetcher = fetcher.setCropRect(rect)
-			}
-			
-			fetcher = fetcher.fetch()
-		} else {
-			var newImage = image
-			
-			if croppingParameters.isEnabled {
-				let cropRect = makeProportionalCropRect()
-				let resizedCropRect = CGRect(x: (image.size.width) * cropRect.origin.x,
-				                     y: (image.size.height) * cropRect.origin.y,
-				                     width: (image.size.width * cropRect.width),
-				                     height: (image.size.height * cropRect.height))
-                
-                DispatchQueue.global(qos: .userInitiated).async {
-                    newImage = image.crop(rect: resizedCropRect)  //This can take long time and block UI
-                    DispatchQueue.main.async {
-                        self.onComplete?(newImage, nil)
-                        self.hideSpinner(spinner)
-                    }
+		        
+        if croppingParameters.isEnabled {
+            let cropRect = makeProportionalCropRect()
+            let resizedCropRect = CGRect(x: (image.size.width) * cropRect.origin.x,
+                                 y: (image.size.height) * cropRect.origin.y,
+                                 width: (image.size.width * cropRect.width),
+                                 height: (image.size.height * cropRect.height))
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                let croppedImage = image.crop(rect: resizedCropRect)  //This can take long time and block UI
+                DispatchQueue.main.async {
+                    self.onComplete?(croppedImage, self.asset)
+                    self.hideSpinner(spinner)
                 }
-                
-			}
-            else {
-                onComplete?(newImage, nil)
-                hideSpinner(spinner)
             }
-		}
+            
+        }
+        else {
+            onComplete?(image, self.asset)
+            hideSpinner(spinner)
+        }
+		
         cropOverlay.removeFromSuperview()  //remove overlay while processing
 	}
 	
@@ -476,5 +469,32 @@ extension UIImage {
         UIGraphicsEndImageContext()
         
         return scaledImage
+    }
+    
+    //Rotate by 90 degrees
+    func rotate() -> UIImage? {
+        
+        let radians = Float.pi/2
+        
+        var newSize = CGRect(origin: CGPoint.zero, size: CGSize(width: self.size.width, height: self.size.height)).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
+        
+        // Trim off the extremely small float value to prevent core graphics from rounding it up
+        newSize.width = floor(newSize.width)
+        newSize.height = floor(newSize.height)
+
+        UIGraphicsBeginImageContextWithOptions(newSize, false, self.scale)
+        let context = UIGraphicsGetCurrentContext()!
+        
+        // Move origin to middle
+        context.translateBy(x: newSize.width/2, y: newSize.height/2)
+        // Rotate around middle
+        context.rotate(by: CGFloat(radians))
+        // Draw the image at its center
+        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return newImage
     }
 }

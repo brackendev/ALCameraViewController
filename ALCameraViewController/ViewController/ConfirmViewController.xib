@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina5_9" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -13,6 +11,7 @@
                 <outlet property="cancelButton" destination="yRi-ES-LfN" id="PUm-mc-H7R"/>
                 <outlet property="confirmButton" destination="ASf-ZD-cIs" id="mpH-Eg-IbA"/>
                 <outlet property="cropOverlay" destination="lnA-tb-Sap" id="34E-zk-Axd"/>
+                <outlet property="rotateButton" destination="Wyb-8e-TYr" id="3T7-ex-gnO"/>
                 <outlet property="scrollView" destination="oUR-U3-uEM" id="rF0-ZM-RmA"/>
                 <outlet property="view" destination="iN0-l3-epB" id="FcS-Dy-kqF"/>
             </connections>
@@ -38,6 +37,14 @@
                     </constraints>
                     <state key="normal" image="confirmButton"/>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wyb-8e-TYr">
+                    <rect key="frame" x="303" y="8" width="64" height="64"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="64" id="B5T-2l-ykm"/>
+                        <constraint firstAttribute="height" constant="64" id="dPw-t7-uXu"/>
+                    </constraints>
+                    <state key="normal" image="rotateButton"/>
+                </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yRi-ES-LfN">
                     <rect key="frame" x="225.66666666666663" y="732" width="64" height="64"/>
                     <constraints>
@@ -53,10 +60,12 @@
                 <constraint firstItem="ASf-ZD-cIs" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="-45" id="89L-rE-rmd"/>
                 <constraint firstAttribute="bottom" secondItem="ASf-ZD-cIs" secondAttribute="bottom" constant="16" id="DZ5-WA-3ZQ"/>
                 <constraint firstAttribute="bottom" secondItem="yRi-ES-LfN" secondAttribute="bottom" constant="60" id="H4a-3r-r5r"/>
+                <constraint firstItem="Wyb-8e-TYr" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="8" id="IAo-1m-56l"/>
                 <constraint firstItem="oUR-U3-uEM" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="J3N-Vr-euu"/>
                 <constraint firstItem="ASf-ZD-cIs" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="Rwi-4K-QRb"/>
                 <constraint firstItem="ASf-ZD-cIs" firstAttribute="bottom" secondItem="yRi-ES-LfN" secondAttribute="top" constant="-60" id="TLl-L0-yLb"/>
                 <constraint firstItem="ASf-ZD-cIs" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" constant="-54" id="WSF-pa-4wb"/>
+                <constraint firstAttribute="trailing" secondItem="Wyb-8e-TYr" secondAttribute="trailing" constant="8" id="hZW-wp-wrm"/>
                 <constraint firstAttribute="bottom" secondItem="oUR-U3-uEM" secondAttribute="bottom" id="iw9-Cg-Kkk"/>
                 <constraint firstItem="oUR-U3-uEM" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="kDN-mM-6KE"/>
                 <constraint firstItem="yRi-ES-LfN" firstAttribute="leading" secondItem="ASf-ZD-cIs" secondAttribute="trailing" constant="60" id="m1F-XR-hgU"/>
@@ -118,5 +127,6 @@
     <resources>
         <image name="confirmButton" width="44" height="44"/>
         <image name="retakeButton" width="44" height="44"/>
+        <image name="rotateButton" width="44" height="44"/>
     </resources>
 </document>
