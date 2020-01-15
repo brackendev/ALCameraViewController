@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name               = "KK-ALCameraViewController"
-  spec.version            = "4.0.1"
+  spec.version            = "4.1.0"
   spec.summary            = "Forked and modified version of ALCameraViewController."
   spec.swift_version      = '5.0'
   spec.source             = { :git => "https://github.com/kkieffer/ALCameraViewController.git", :tag => spec.version.to_s }
