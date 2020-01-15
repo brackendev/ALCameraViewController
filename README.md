@@ -48,6 +48,7 @@ ALCameraViewController is available under the MIT license. See the LICENSE file 
 
 * Significant updates to the presentation of the image, scrolling, and cropping to fix inconsistencies especially when switching between portrait and landscape.  See source file for full details.
 * Allow zooming in on the image during cropping
+* Rotate button to rotate the image 90 degrees clockwise on each press
 
 ## Example 
 
