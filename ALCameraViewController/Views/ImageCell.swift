@@ -15,9 +15,7 @@ class ImageCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
-        imageView.image = UIImage(named: "placeholder",
-                                  in: CameraGlobals.shared.bundle,
-                                  compatibleWith: nil)
+        imageView.image = CameraImages.shared.placeholder
         return imageView
     }()
 

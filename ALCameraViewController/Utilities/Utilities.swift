@@ -88,15 +88,15 @@ internal func normalizedRect(_ rect: CGRect, orientation: UIImage.Orientation) -
     return normalizedRect
 }
 
-internal func flashImage(_ mode: AVCaptureDevice.FlashMode) -> String {
-    let image: String
+internal func flashImage(_ mode: AVCaptureDevice.FlashMode) -> UIImage {
+    let image: UIImage
     switch mode {
     case .auto:
-        image = "flashAutoIcon"
+        image = CameraImages.shared.flashAuto
     case .on:
-        image = "flashOnIcon"
+        image = CameraImages.shared.flashOn
     case .off:
-        image = "flashOffIcon"
+        image = CameraImages.shared.flashOff
     @unknown default:
         fatalError("unknown flash mode")
     }

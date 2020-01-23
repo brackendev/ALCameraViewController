@@ -54,3 +54,52 @@ public class CameraGlobals {
     }
     
 }
+
+public struct CameraImages {
+    public static var shared = CameraImages()
+
+    public var camera: UIImage // 80 x 80 px
+    public var cameraHighlighted: UIImage // 80 x 80 px
+    public var close: UIImage //  44 x 44 px
+    public var confirm: UIImage //  44 x 44 px
+    public var flashAuto: UIImage //  44 x 44 px
+    public var flashOff: UIImage //  44 x 44 px
+    public var flashOn: UIImage //  44 x 44 px
+    public var library: UIImage //  44 x 44 px
+    public var libraryCancel: UIImage //  32 x 32 px
+    public var libraryConfirm: UIImage //  32 x 32 px
+    public var permissions: UIImage // 60 x 60 px
+    public var placeholder: UIImage // 104 x 104 px
+    public var retake: UIImage //  44 x 44 px
+    public var swap: UIImage //  44 x 44 px
+    
+    public init(camera: UIImage = UIImage(named: "cameraButton", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                cameraHighlighted: UIImage = UIImage(named: "cameraButtonHighlighted", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                close: UIImage = UIImage(named: "closeButton", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                confirm: UIImage = UIImage(named: "confirmButton", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                flashAuto: UIImage = UIImage(named: "flashAutoIcon", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                flashOff: UIImage = UIImage(named: "flashOffIcon", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                flashOn: UIImage = UIImage(named: "flashOnIcon", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                library: UIImage = UIImage(named: "libraryButton", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                libraryCancel: UIImage = UIImage(named: "libraryCancel", in: CameraGlobals.shared.bundle, compatibleWith: nil)!.withRenderingMode(UIImage.RenderingMode.alwaysOriginal),
+                libraryConfirm: UIImage = UIImage(named: "libraryConfirm", in: CameraGlobals.shared.bundle, compatibleWith: nil)!.withRenderingMode(UIImage.RenderingMode.alwaysOriginal),
+                permissions: UIImage = UIImage(named: "permissionsIcon", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                placeholder: UIImage = UIImage(named: "placeholder", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                retake: UIImage = UIImage(named: "retakeButton", in: CameraGlobals.shared.bundle, compatibleWith: nil)!,
+                swap: UIImage = UIImage(named: "swapButton", in: CameraGlobals.shared.bundle, compatibleWith: nil)!) {
+        self.camera = camera
+        self.cameraHighlighted = cameraHighlighted
+        self.close = close
+        self.confirm = confirm
+        self.flashAuto = flashAuto
+        self.flashOff = flashOff
+        self.flashOn = flashOn
+        self.library = library
+        self.libraryCancel = libraryCancel
+        self.libraryConfirm = libraryConfirm
+        self.permissions = permissions
+        self.placeholder = placeholder
+        self.retake = retake
+        self.swap = swap
+    }
+}

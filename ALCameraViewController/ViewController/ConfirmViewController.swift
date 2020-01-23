@@ -48,7 +48,7 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var cropOverlay: CropOverlay!
     @IBOutlet weak var confirmButton: UIButton!
-    @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var retakeButton: UIButton!
     @IBOutlet weak var rotateButton: UIButton!
     
     
@@ -142,6 +142,9 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 			hideSpinner(spinner)
 			enable()
 		}
+
+        retakeButton.setImage(CameraImages.shared.retake, for: .normal)
+        confirmButton.setImage(CameraImages.shared.confirm, for: .normal)
         
         NotificationCenter.default.addObserver(self, selector: #selector(orientationChanged), name:  Notification.Name("UIDeviceOrientationDidChangeNotification"), object: nil)
 
@@ -286,7 +289,7 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	
 	private func buttonActions() {
 		confirmButton.action = { [weak self] in self?.confirmPhoto() }
-		cancelButton.action = { [weak self] in self?.cancel() }
+		retakeButton.action = { [weak self] in self?.cancel() }
         rotateButton.action = { [weak self] in self?.rotateRight() }
 	}
     
@@ -370,12 +373,12 @@ public class ConfirmViewController: UIViewController, UIScrollViewDelegate {
 	
 	func disable() {
 		confirmButton.isEnabled = false
-        cancelButton.isEnabled = false
+        retakeButton.isEnabled = false
 	}
 	
 	func enable() {
 		confirmButton.isEnabled = true
-        cancelButton.isEnabled = true
+        retakeButton.isEnabled = true
 	}
 	
 	func showNoImageScreen(_ error: NSError) {

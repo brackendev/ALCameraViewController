@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ConfirmViewController" customModule="ALCameraViewController" customModuleProvider="target">
             <connections>
-                <outlet property="cancelButton" destination="yRi-ES-LfN" id="PUm-mc-H7R"/>
-                <outlet property="confirmButton" destination="ASf-ZD-cIs" id="mpH-Eg-IbA"/>
+                <outlet property="confirmButton" destination="yRi-ES-LfN" id="w4c-dR-Yn7"/>
                 <outlet property="cropOverlay" destination="lnA-tb-Sap" id="34E-zk-Axd"/>
+                <outlet property="retakeButton" destination="ASf-ZD-cIs" id="U4l-xO-4UX"/>
                 <outlet property="rotateButton" destination="Wyb-8e-TYr" id="3T7-ex-gnO"/>
                 <outlet property="scrollView" destination="oUR-U3-uEM" id="rF0-ZM-RmA"/>
                 <outlet property="view" destination="iN0-l3-epB" id="FcS-Dy-kqF"/>
@@ -35,7 +35,7 @@
                         <constraint firstAttribute="height" constant="64" id="J7n-mn-Ebe"/>
                         <constraint firstAttribute="width" constant="64" id="YWt-e6-Bvy"/>
                     </constraints>
-                    <state key="normal" image="confirmButton"/>
+                    <state key="normal" image="retakeButton"/>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wyb-8e-TYr">
                     <rect key="frame" x="303" y="8" width="64" height="64"/>
@@ -51,7 +51,7 @@
                         <constraint firstAttribute="height" constant="64" id="FdJ-mW-Tx6"/>
                         <constraint firstAttribute="width" constant="64" id="urS-JS-i1S"/>
                     </constraints>
-                    <state key="normal" image="retakeButton"/>
+                    <state key="normal" image="confirmButton"/>
                 </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

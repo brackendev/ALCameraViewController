@@ -45,7 +45,7 @@ public class PhotoLibraryViewController: UIViewController {
         
         setNeedsStatusBarAppearanceUpdate()
         
-        let buttonImage = UIImage(named: "libraryCancel", in: CameraGlobals.shared.bundle, compatibleWith: nil)?.withRenderingMode(UIImage.RenderingMode.alwaysOriginal)
+        let buttonImage = CameraImages.shared.libraryCancel
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: buttonImage,
                                                            style: UIBarButtonItem.Style.plain,

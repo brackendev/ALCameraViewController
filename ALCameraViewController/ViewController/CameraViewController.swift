@@ -107,13 +107,9 @@ open class CameraViewController: UIViewController {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isEnabled = false
-        button.setImage(UIImage(named: "cameraButton",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
+        button.setImage(CameraImages.shared.camera,
                         for: .normal)
-        button.setImage(UIImage(named: "cameraButtonHighlighted",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
+        button.setImage(CameraImages.shared.cameraHighlighted,
                         for: .highlighted)
         return button
     }()
@@ -121,9 +117,7 @@ open class CameraViewController: UIViewController {
     let closeButton : UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "closeButton",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
+        button.setImage(CameraImages.shared.close,
                         for: .normal)
         return button
     }()
@@ -131,9 +125,7 @@ open class CameraViewController: UIViewController {
     let swapButton : UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "swapButton",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
+        button.setImage(CameraImages.shared.swap,
                         for: .normal)
         return button
     }()
@@ -141,9 +133,7 @@ open class CameraViewController: UIViewController {
     let libraryButton : UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "libraryButton",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
+        button.setImage(CameraImages.shared.library,
                         for: .normal)
         return button
     }()
@@ -151,9 +141,7 @@ open class CameraViewController: UIViewController {
     let flashButton : UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage(named: "flashAutoIcon",
-                                in: CameraGlobals.shared.bundle,
-                                compatibleWith: nil),
+        button.setImage(CameraImages.shared.flashAuto,
                         for: .normal)
         return button
     }()
@@ -540,9 +528,7 @@ open class CameraViewController: UIViewController {
             return
         }
   
-        let image = UIImage(named: flashImage(device.flashMode),
-                            in: CameraGlobals.shared.bundle,
-                            compatibleWith: nil)
+        let image = flashImage(device.flashMode)
         
         flashButton.setImage(image, for: .normal)
     }
